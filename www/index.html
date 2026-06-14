@@ -966,7 +966,12 @@ async function restoreBackup(input){
   try{
     const arr=await file.arrayBuffer();
     const bytes=new Uint8Array(arr);
-    const b64=btoa(String.fromCharCode(...bytes));
+    let b64='';
+    const chunk=8192;
+    for(let i=0;i<bytes.length;i+=chunk){
+      b64+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+    }
+    b64=btoa(b64);
     await sqlite.restoreDatabaseFromLocalDisk({ database: DB_NAME, fileContent: b64 });
     await loadBusinesses();
     toast('Restored! Reloading...');
