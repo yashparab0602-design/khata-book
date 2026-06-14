@@ -1,0 +1,13 @@
+// This file is for reference only.
+// After running "npx cap add android", the android/ folder is generated.
+// GitHub Actions handles this automatically.
+// 
+// The CapacitorSQLite plugin requires these in android/app/build.gradle:
+//
+// android {
+//   defaultConfig {
+//     minSdkVersion 23   ← must be 23+
+//   }
+// }
+//
+// This is already handled by the workflow via npx cap sync.

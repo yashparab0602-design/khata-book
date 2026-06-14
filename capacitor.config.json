@@ -1,0 +1,19 @@
+{
+  "appId": "com.khatabook.app",
+  "appName": "Khata Book",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": true,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false,
+    "minWebViewVersion": 55
+  },
+  "plugins": {
+    "CapacitorSQLite": {
+      "androidIsEncryption": false,
+      "androidBiometric": {
+        "biometricAuth": false
+      }
+    }
+  }
+}

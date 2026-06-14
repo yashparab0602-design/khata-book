@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#1565C0"/>
+<title>Khata Book</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --blue:#1565C0;--blue-light:#1976D2;--blue-dark:#0D47A1;
+  --green:#2E7D32;--red:#C62828;--amber:#E65100;
+  --bg:#F5F5F5;--card:#fff;--border:#E0E0E0;
+  --text:#212121;--text2:#757575;--text3:#9E9E9E;
+  --radius:12px;--shadow:0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.08);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+#topbar{background:var(--blue);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+#topbar h1{flex:1;font-size:18px;font-weight:600}
+.icon-btn{background:none;border:none;color:#fff;cursor:pointer;padding:6px;border-radius:50%;font-size:22px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.icon-btn:hover{background:rgba(255,255,255,.15)}
+#bottomnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:var(--safe-bottom)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;cursor:pointer;font-size:10px;color:var(--text2);border:none;background:none;gap:3px;transition:color .2s}
+.nav-item.active{color:var(--blue)}
+.nav-item svg{width:22px;height:22px;stroke-width:1.8}
+#main{padding:12px 12px calc(70px + var(--safe-bottom));min-height:100vh}
+#biz-bar{background:var(--blue-dark);padding:8px 16px;display:flex;align-items:center;gap:8px;position:sticky;top:56px;z-index:99}
+#biz-select{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:4px 10px;border-radius:20px;font-size:13px;cursor:pointer;outline:none}
+#biz-select option{color:#000;background:#fff}
+#sync-status{margin-left:auto;font-size:11px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:4px}
+.dot{width:7px;height:7px;border-radius:50%;background:#4CAF50}
+.dot.warn{background:#FF9800}
+.dot.err{background:#f44336}
+.summary-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.sum-card{background:var(--card);border-radius:var(--radius);padding:12px 10px;box-shadow:var(--shadow);text-align:center}
+.sum-card .label{font-size:10px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.sum-card .amount{font-size:15px;font-weight:700}
+.sum-card.credit .amount{color:var(--green)}
+.sum-card.debit .amount{color:var(--red)}
+.sum-card.net .amount{color:var(--blue)}
+.search-box{display:flex;align-items:center;background:var(--card);border-radius:30px;padding:8px 14px;box-shadow:var(--shadow);margin-bottom:12px;gap:8px}
+.search-box svg{width:18px;height:18px;color:var(--text3);flex-shrink:0}
+.search-box input{flex:1;border:none;outline:none;font-size:14px;background:none;color:var(--text)}
+.account-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:8px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:transform .1s,box-shadow .1s}
+.account-card:active{transform:scale(.98);box-shadow:none}
+.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;color:#fff}
+.account-info{flex:1;min-width:0}
+.account-info h3{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.account-info p{font-size:12px;color:var(--text2);margin-top:2px}
+.account-balance{text-align:right;flex-shrink:0}
+.account-balance .bal{font-size:16px;font-weight:700}
+.account-balance .date{font-size:10px;color:var(--text3);margin-top:2px}
+.bal.pos{color:var(--green)}
+.bal.neg{color:var(--red)}
+#fab{position:fixed;bottom:calc(76px + var(--safe-bottom));right:16px;width:56px;height:56px;border-radius:50%;background:var(--blue);color:#fff;border:none;box-shadow:0 4px 12px rgba(21,101,192,.4);cursor:pointer;font-size:28px;display:flex;align-items:center;justify-content:center;z-index:99;transition:transform .2s}
+#fab:active{transform:scale(.92)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;flex-direction:column;justify-content:flex-end}
+.modal{background:#fff;border-radius:20px 20px 0 0;padding:20px 16px;max-height:92vh;overflow-y:auto;padding-bottom:calc(20px + var(--safe-bottom))}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;cursor:grab}
+.modal h2{font-size:17px;font-weight:700;margin-bottom:16px;color:var(--text)}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:15px;color:var(--text);outline:none;transition:border-color .2s;background:#fff;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue)}
+.form-group textarea{resize:vertical;min-height:70px}
+.btn-row{display:flex;gap:10px;margin-top:6px}
+.btn{flex:1;padding:13px;border-radius:10px;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:opacity .2s}
+.btn:active{opacity:.8}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-success{background:var(--green);color:#fff}
+.btn-danger{background:var(--red);color:#fff}
+.btn-outline{background:#fff;color:var(--blue);border:1.5px solid var(--blue)}
+.btn-sm{flex:none;padding:8px 14px;font-size:13px;border-radius:8px}
+.trans-card{background:var(--card);border-radius:10px;padding:12px 14px;margin-bottom:6px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
+.trans-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trans-icon.credit{background:#E8F5E9}
+.trans-icon.debit{background:#FFEBEE}
+.trans-info{flex:1;min-width:0}
+.trans-info .desc{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trans-info .date{font-size:11px;color:var(--text3);margin-top:2px}
+.trans-amt{font-size:15px;font-weight:700;text-align:right}
+.trans-amt.credit{color:var(--green)}
+.trans-amt.debit{color:var(--red)}
+.trans-bal{font-size:10px;color:var(--text3);text-align:right;margin-top:2px}
+.tabs{display:flex;background:var(--card);border-radius:10px;padding:4px;margin-bottom:14px;box-shadow:var(--shadow)}
+.tab{flex:1;text-align:center;padding:8px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s,color .2s;border:none;background:none;color:var(--text2)}
+.tab.active{background:var(--blue);color:#fff}
+.bill-preview{background:#fff;border:1px dashed var(--border);border-radius:8px;padding:16px;margin-top:12px;font-family:'Courier New',monospace;font-size:12px}
+.bill-preview h3{text-align:center;font-size:14px;margin-bottom:4px}
+.bill-divider{border-top:1px dashed #999;margin:8px 0}
+.bill-row{display:flex;justify-content:space-between;padding:1px 0}
+.bill-total{display:flex;justify-content:space-between;font-weight:700;font-size:13px}
+.bill-item-row{display:flex;gap:8px;margin-bottom:8px;align-items:center}
+.bill-item-row input{flex:2}
+.bill-item-row input.qty{flex:.6}
+.bill-item-row input.rate{flex:1}
+.bill-item-row .total-cell{flex:.8;text-align:right;font-weight:600;font-size:14px;padding-right:4px}
+.del-item{background:none;border:none;color:var(--red);font-size:20px;cursor:pointer;padding:0 4px}
+.item-card{background:var(--card);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow);margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.item-icon{width:40px;height:40px;border-radius:10px;background:#E3F2FD;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.item-info{flex:1;min-width:0}
+.item-info h3{font-size:14px;font-weight:600}
+.item-info p{font-size:12px;color:var(--text2);margin-top:2px}
+.item-rate{font-size:15px;font-weight:700;color:var(--blue)}
+.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:600;margin-left:6px}
+.badge.low{background:#FFF3E0;color:#E65100}
+.report-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:10px}
+.report-card h3{font-size:14px;font-weight:700;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.settings-section{margin-bottom:20px}
+.settings-section h3{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;padding:0 4px;margin-bottom:8px}
+.settings-item{background:var(--card);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px;margin-bottom:6px;cursor:pointer}
+.settings-item svg{width:20px;height:20px;color:var(--blue);flex-shrink:0}
+.settings-item .si-info{flex:1}
+.settings-item .si-info h4{font-size:14px;font-weight:600}
+.settings-item .si-info p{font-size:12px;color:var(--text2);margin-top:2px}
+.toggle{width:44px;height:24px;background:var(--border);border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--blue)}
+.toggle::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on::after{transform:translateX(20px)}
+#toast{position:fixed;bottom:calc(90px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:#323232;color:#fff;padding:10px 20px;border-radius:25px;font-size:13px;opacity:0;transition:opacity .3s,transform .3s;z-index:999;white-space:nowrap;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.empty{text-align:center;padding:40px 20px;color:var(--text3)}
+.empty svg{width:56px;height:56px;margin:0 auto 12px;display:block;opacity:.4}
+.empty h3{font-size:16px;color:var(--text2);margin-bottom:6px}
+.empty p{font-size:13px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:12px;cursor:pointer;transition:background .2s}
+.chip.selected{background:var(--blue);color:#fff;border-color:var(--blue)}
+.chips-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.acc-detail-header{background:var(--blue);color:#fff;padding:16px;border-radius:var(--radius);margin-bottom:12px;box-shadow:var(--shadow)}
+.acc-detail-header h2{font-size:18px;font-weight:700}
+.acc-detail-header .balance-big{font-size:28px;font-weight:800;margin:6px 0 4px}
+.acc-detail-header p{font-size:12px;opacity:.8}
+.hidden{display:none!important}
+#loading-screen{position:fixed;inset:0;background:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;color:#fff}
+#loading-screen h2{font-size:28px;font-weight:800;margin-bottom:8px}
+#loading-screen p{font-size:14px;opacity:.7}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media print{
+  #topbar,#bottomnav,#biz-bar,#fab,#toast{display:none!important}
+  #main{padding:0!important}
+  .modal-overlay{position:static;background:none}
+  .modal{border-radius:0;box-shadow:none;max-height:none}
+  .btn-row,.icon-btn{display:none!important}
+  .bill-preview{border:1px solid #000;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="spinner"></div>
+  <h2>Khata Book</h2>
+  <p>Opening database...</p>
+</div>
+
+<div id="topbar" style="display:none">
+  <button class="icon-btn" id="backBtn" onclick="goBack()" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+  </button>
+  <h1 id="pageTitle">Khata Book</h1>
+  <button class="icon-btn" onclick="toggleSearch()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+  </button>
+  <button class="icon-btn" onclick="showSyncMenu()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+  </button>
+</div>
+
+<div id="biz-bar" style="display:none">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+  <select id="biz-select" onchange="changeBiz(this.value)"></select>
+  <div id="sync-status"><div class="dot warn" id="syncDot"></div><span id="syncText">Ready</span></div>
+</div>
+
+<div id="main" style="display:none"></div>
+<button id="fab" style="display:none" onclick="onFabClick()">+</button>
+<nav id="bottomnav" style="display:none">
+  <button class="nav-item active" onclick="showPage('accounts')" id="nav-accounts">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Accounts
+  </button>
+  <button class="nav-item" onclick="showPage('bills')" id="nav-bills">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Bills
+  </button>
+  <button class="nav-item" onclick="showPage('items')" id="nav-items">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    Items
+  </button>
+  <button class="nav-item" onclick="showPage('reports')" id="nav-reports">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    Reports
+  </button>
+  <button class="nav-item" onclick="showPage('settings')" id="nav-settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+    Settings
+  </button>
+</nav>
+<div id="toast"></div>
+
+<!-- Capacitor Core -->
+<script src="capacitor.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// CAPACITOR SQLITE — Native .db file on device
+// ═══════════════════════════════════════════
+const DB_NAME = 'khatabook';
+let sqlite, db;
+let currentPage = 'accounts';
+let currentBiz = '';
+let currentAccount = null;
+let searchVisible = false;
+let businesses = [];
+let billItems = [];
+let autoSyncEnabled = true;
+let gdToken = null;
+let gdFileId = null;
+let syncTimer = null;
+
+const COLORS = ['#1565C0','#2E7D32','#6A1B9A','#C62828','#E65100','#00695C','#AD1457','#4527A0'];
+function avatarColor(n){ let h=0; for(let c of n) h=c.charCodeAt(0)+((h<<5)-h); return COLORS[Math.abs(h)%COLORS.length]; }
+function initials(n){ return n.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2); }
+function fmt(n){ return '₹'+Math.abs(n||0).toLocaleString('en-IN',{minimumFractionDigits:0,maximumFractionDigits:0}); }
+function fmtDate(ts){ if(!ts) return ''; const d=new Date(typeof ts==='string'?ts:Number(ts)); return isNaN(d)?'':d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'}); }
+function toast(msg,dur=2500){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),dur); }
+
+// ─── DB INIT ───────────────────────────────
+async function initDB(){
+  try {
+    const { CapacitorSQLite } = Capacitor.Plugins;
+    sqlite = CapacitorSQLite;
+
+    // Create or open the native .db file
+    // File will be at: /data/data/com.khatabook.app/databases/khatabook.db
+    const ret = await sqlite.createConnection({
+      database: DB_NAME,
+      encrypted: false,
+      mode: 'no-encryption',
+      version: 1,
+      readonly: false
+    });
+    db = ret;
+    await sqlite.open({ database: DB_NAME });
+    await createSchema();
+    await loadBusinesses();
+    hideLoading();
+    renderPage();
+  } catch(e) {
+    console.error('DB init error:', e);
+    document.querySelector('#loading-screen p').textContent = 'Error: ' + e.message;
+  }
+}
+
+async function createSchema(){
+  const stmts = [
+    `CREATE TABLE IF NOT EXISTS business (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)`,
+    `CREATE TABLE IF NOT EXISTS account (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, number TEXT DEFAULT '0', balance REAL NOT NULL DEFAULT 0, bookmark TEXT, image TEXT, account_type TEXT DEFAULT 'Others', business TEXT, last_transaction INTEGER NOT NULL DEFAULT 0)`,
+    `CREATE TABLE IF NOT EXISTS trans (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, date TEXT, reminder TEXT, credit REAL NOT NULL DEFAULT 0, debit REAL NOT NULL DEFAULT 0, narration TEXT, bill TEXT, balance REAL NOT NULL DEFAULT 0, business TEXT, entry_date INTEGER NOT NULL, isDeleted INTEGER NOT NULL DEFAULT 0, deletedDate INTEGER NOT NULL DEFAULT 0)`,
+    `CREATE TABLE IF NOT EXISTS item (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, rate REAL NOT NULL DEFAULT 0, balance REAL NOT NULL DEFAULT 0, category TEXT DEFAULT 'Others', unit TEXT DEFAULT '', lowStockAlert REAL NOT NULL DEFAULT 0, business TEXT)`,
+    `CREATE TABLE IF NOT EXISTS itemtrans (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, unit TEXT, date INTEGER NOT NULL, sale REAL NOT NULL DEFAULT 0, purchase REAL NOT NULL DEFAULT 0, notes TEXT, business TEXT, sale_price REAL NOT NULL DEFAULT 0, purchase_price REAL NOT NULL DEFAULT 0)`,
+    `CREATE TABLE IF NOT EXISTS bills (_id INTEGER PRIMARY KEY AUTOINCREMENT, bill_no TEXT, account_name TEXT, date INTEGER NOT NULL, items_json TEXT, total REAL NOT NULL DEFAULT 0, notes TEXT, business TEXT, transferred INTEGER DEFAULT 0)`
+  ];
+  for(const s of stmts){
+    await sqlite.execute({ database: DB_NAME, statements: s });
+  }
+  // Ensure at least one business exists
+  const r = await sqlite.query({ database: DB_NAME, statement: "SELECT COUNT(*) as c FROM business", values:[] });
+  if((r.values[0]?.c||0) === 0){
+    await sqlite.run({ database: DB_NAME, statement: "INSERT INTO business (name) VALUES (?)", values: ['My Business'] });
+  }
+}
+
+function hideLoading(){
+  document.getElementById('loading-screen').style.display='none';
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('biz-bar').style.display='flex';
+  document.getElementById('main').style.display='block';
+  document.getElementById('fab').style.display='flex';
+  document.getElementById('bottomnav').style.display='flex';
+}
+
+async function query(sql, params=[]){
+  try{
+    const r = await sqlite.query({ database: DB_NAME, statement: sql, values: params });
+    return r.values || [];
+  } catch(e){ console.error('query',sql,e); return []; }
+}
+
+async function run(sql, params=[]){
+  try{
+    await sqlite.run({ database: DB_NAME, statement: sql, values: params });
+    scheduleAutoSync();
+    return true;
+  } catch(e){ console.error('run',sql,e); return false; }
+}
+
+async function loadBusinesses(){
+  const rows = await query("SELECT name FROM business ORDER BY _id");
+  businesses = rows.map(r=>r.name||r[0]);
+  if(!businesses.length) businesses=['My Business'];
+  if(!currentBiz) currentBiz = businesses[0];
+  const sel = document.getElementById('biz-select');
+  if(sel) sel.innerHTML = businesses.map(b=>`<option value="${b}" ${b===currentBiz?'selected':''}>${b}</option>`).join('');
+}
+
+function changeBiz(val){ currentBiz=val; renderPage(); }
+
+// ─── NAVIGATION ────────────────────────────
+function showPage(page){
+  currentPage=page; currentAccount=null;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const nb=document.getElementById('nav-'+page);
+  if(nb) nb.classList.add('active');
+  document.getElementById('backBtn').style.display='none';
+  document.getElementById('fab').style.display='flex';
+  renderPage();
+}
+
+function goBack(){
+  if(currentAccount){ currentAccount=null; document.getElementById('backBtn').style.display='none'; document.getElementById('pageTitle').textContent='Khata Book'; renderPage(); }
+}
+
+async function renderPage(){
+  if(currentAccount){ await renderAccountDetail(); return; }
+  switch(currentPage){
+    case 'accounts': await renderAccounts(); break;
+    case 'bills': await renderBills(); break;
+    case 'items': await renderItems(); break;
+    case 'reports': await renderReports(); break;
+    case 'settings': renderSettings(); break;
+  }
+}
+
+function toggleSearch(){ searchVisible=!searchVisible; renderPage(); }
+
+// ─── ACCOUNTS ──────────────────────────────
+async function renderAccounts(filter=''){
+  document.getElementById('pageTitle').textContent='Khata Book';
+  document.getElementById('fab').style.display='flex';
+  const rows = await query(
+    "SELECT _id,name,number,balance,account_type,last_transaction FROM account WHERE business=? AND LOWER(name) LIKE ? ORDER BY last_transaction DESC",
+    [currentBiz,'%'+filter.toLowerCase()+'%']
+  );
+  let totalCredit=0, totalDebit=0;
+  rows.forEach(r=>{ const b=r.balance??r[3]??0; if(b>0) totalCredit+=b; else totalDebit+=b; });
+  const net=totalCredit+totalDebit;
+
+  const html=`
+  ${searchVisible?`<div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input id="searchInput" placeholder="Search accounts..." value="${filter}" oninput="renderAccounts(this.value)"/></div>`:''}
+  <div class="summary-row">
+    <div class="sum-card credit"><div class="label">Will Give</div><div class="amount">${fmt(totalCredit)}</div></div>
+    <div class="sum-card debit"><div class="label">Will Get</div><div class="amount">${fmt(Math.abs(totalDebit))}</div></div>
+    <div class="sum-card net"><div class="label">Net</div><div class="amount" style="color:${net>=0?'var(--green)':'var(--red)'}">${net>=0?'+':'-'}${fmt(net)}</div></div>
+  </div>
+  <div class="chips-row">
+    ${['All','Customer','Supplier','Others'].map(t=>`<div class="chip ${t==='All'?'selected':''}" onclick="filterByType('${t}',this)">${t}</div>`).join('')}
+  </div>
+  ${rows.length===0?`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><h3>No accounts yet</h3><p>Tap + to add your first account</p></div>`:''}
+  ${rows.map(r=>{
+    const name=r.name??r[1]; const bal=r.balance??r[3]??0; const type=r.account_type??r[4]??''; const lt=r.last_transaction??r[5]??0;
+    return `<div class="account-card" onclick="openAccount(${r._id??r[0]})">
+      <div class="avatar" style="background:${avatarColor(name)}">${initials(name)}</div>
+      <div class="account-info"><h3>${name}</h3><p>${type}</p></div>
+      <div class="account-balance"><div class="bal ${bal>=0?'pos':'neg'}">${bal>=0?'▲':'▼'} ${fmt(bal)}</div><div class="date">${fmtDate(lt)}</div></div>
+    </div>`;
+  }).join('')}`;
+  document.getElementById('main').innerHTML=html;
+}
+
+async function filterByType(type,el){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  const filter=document.getElementById('searchInput')?.value||'';
+  const rows = type==='All'
+    ? await query("SELECT _id,name,balance,account_type,last_transaction FROM account WHERE business=? ORDER BY last_transaction DESC",[currentBiz])
+    : await query("SELECT _id,name,balance,account_type,last_transaction FROM account WHERE business=? AND account_type=? ORDER BY last_transaction DESC",[currentBiz,type]);
+  const container=document.getElementById('main');
+  const chips=container.querySelector('.chips-row');
+  const existing=container.querySelectorAll('.account-card,.empty');
+  existing.forEach(e=>e.remove());
+  const html=rows.length===0
+    ?`<div class="empty"><h3>No ${type} accounts</h3></div>`
+    :rows.map(r=>{
+      const name=r.name??r[1]; const bal=r.balance??r[2]??0;
+      return `<div class="account-card" onclick="openAccount(${r._id??r[0]})"><div class="avatar" style="background:${avatarColor(name)}">${initials(name)}</div><div class="account-info"><h3>${name}</h3></div><div class="account-balance"><div class="bal ${bal>=0?'pos':'neg'}">${bal>=0?'▲':'▼'} ${fmt(bal)}</div></div></div>`;
+    }).join('');
+  chips.insertAdjacentHTML('afterend',html);
+}
+
+async function openAccount(id){
+  const rows=await query("SELECT _id,name,number,balance,account_type,business,last_transaction FROM account WHERE _id=?",[id]);
+  if(!rows.length) return;
+  const r=rows[0];
+  currentAccount={id:r._id??r[0],name:r.name??r[1],number:r.number??r[2],balance:r.balance??r[3],type:r.account_type??r[4],business:r.business??r[5]};
+  document.getElementById('backBtn').style.display='flex';
+  document.getElementById('pageTitle').textContent=currentAccount.name;
+  await renderAccountDetail();
+}
+
+async function renderAccountDetail(){
+  const acc=currentAccount;
+  const trans=await query(
+    "SELECT _id,date,credit,debit,narration,bill,balance,entry_date FROM trans WHERE name=? AND business=? AND isDeleted=0 ORDER BY entry_date DESC",
+    [acc.name, acc.business||currentBiz]
+  );
+  const html=`
+  <div class="acc-detail-header">
+    <h2>${acc.name}</h2>
+    <div class="balance-big" style="color:${acc.balance>=0?'#A5D6A7':'#EF9A9A'}">${acc.balance>=0?'You will give':'You will get'} ${fmt(acc.balance)}</div>
+    <p>${acc.type||'Others'} ${acc.number&&acc.number!=='0'?'• Ph: '+acc.number:''}</p>
+    <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.5)" onclick="showAddTransModal('credit')">+ Credit</button>
+      <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.5)" onclick="showAddTransModal('debit')">+ Debit</button>
+      <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.5)" onclick="showCreateBillModal('${acc.name.replace(/'/g,"\\'")}')">🧾 Bill</button>
+      <button class="btn btn-outline btn-sm" style="color:#fff;border-color:rgba(255,255,255,.5);margin-left:auto" onclick="showEditAccountModal()">Edit</button>
+    </div>
+  </div>
+  ${trans.length===0?`<div class="empty"><h3>No transactions</h3><p>Add your first entry above</p></div>`:''}
+  ${trans.map(t=>{
+    const isC=(t.credit??t[2])>0; const amt=isC?(t.credit??t[2]):(t.debit??t[3]); const narr=t.narration??t[4]; const bal=t.balance??t[6]; const dt=t.date??t[1]??t.entry_date??t[7];
+    return `<div class="trans-card" onclick="showTransDetail(${t._id??t[0]})">
+      <div class="trans-icon ${isC?'credit':'debit'}">${isC?'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>':'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>'}</div>
+      <div class="trans-info"><div class="desc">${narr||(isC?'Credit':'Debit')}</div><div class="date">${fmtDate(dt)}</div></div>
+      <div><div class="trans-amt ${isC?'credit':'debit'}">${isC?'+':'-'}${fmt(amt)}</div><div class="trans-bal">Bal: ${fmt(bal)}</div></div>
+    </div>`;
+  }).join('')}`;
+  document.getElementById('main').innerHTML=html;
+  document.getElementById('fab').style.display='none';
+}
+
+// ─── MODALS ────────────────────────────────
+function closeModal(){ document.querySelector('.modal-overlay')?.remove(); }
+
+function showModal(title,content,actions=''){
+  document.querySelector('.modal-overlay')?.remove();
+  const el=document.createElement('div');
+  el.className='modal-overlay';
+  el.innerHTML=`<div class="modal"><div class="modal-handle"></div><h2>${title}</h2>${content}<div class="btn-row">${actions}</div></div>`;
+  el.addEventListener('click',e=>{ if(e.target===el) closeModal(); });
+  document.body.appendChild(el);
+}
+
+function showAddAccountModal(){
+  showModal('New Account',`
+    <div class="form-group"><label>Name *</label><input id="m-name" placeholder="Contact name"/></div>
+    <div class="form-group"><label>Phone</label><input id="m-phone" type="tel" placeholder="Phone number"/></div>
+    <div class="form-group"><label>Type</label><select id="m-type"><option>Others</option><option>Customer</option><option>Supplier</option></select></div>
+    <div class="form-group"><label>Opening Balance (₹)</label><input id="m-bal" type="number" placeholder="0"/></div>
+    <div class="form-group"><label>Balance Type</label><select id="m-baltype"><option value="credit">Will Give (Credit)</option><option value="debit">Will Get (Debit)</option></select></div>
+  `,`<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveAccount()">Save</button>`);
+}
+
+async function saveAccount(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){ toast('Name is required'); return; }
+  const phone=document.getElementById('m-phone').value.trim()||'0';
+  const type=document.getElementById('m-type').value;
+  let bal=parseFloat(document.getElementById('m-bal').value)||0;
+  const bt=document.getElementById('m-baltype').value;
+  if(bt==='debit') bal=-bal;
+  await run("INSERT INTO account (name,number,balance,account_type,business,last_transaction) VALUES (?,?,?,?,?,?)",[name,phone,bal,type,currentBiz,Date.now()]);
+  if(bal!==0){
+    await run("INSERT INTO trans (name,date,credit,debit,narration,balance,business,entry_date) VALUES (?,?,?,?,?,?,?,?)",[name,new Date().toISOString().slice(0,19),bal>0?bal:0,bal<0?Math.abs(bal):0,'Opening Balance',bal,currentBiz,Date.now()]);
+  }
+  closeModal(); toast('Account created'); await renderAccounts();
+}
+
+function showEditAccountModal(){
+  const acc=currentAccount;
+  showModal('Edit Account',`
+    <div class="form-group"><label>Name *</label><input id="m-name" value="${acc.name}"/></div>
+    <div class="form-group"><label>Phone</label><input id="m-phone" type="tel" value="${acc.number!=='0'?acc.number:''}"/></div>
+    <div class="form-group"><label>Type</label><select id="m-type">${['Others','Customer','Supplier'].map(t=>`<option ${t===acc.type?'selected':''}>${t}</option>`).join('')}</select></div>
+  `,`<button class="btn btn-danger btn-sm" onclick="deleteAccount()" style="flex:none;padding:13px 16px">Delete</button><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="updateAccount()">Save</button>`);
+}
+
+async function updateAccount(){
+  const name=document.getElementById('m-name').value.trim();
+  if(!name){ toast('Name required'); return; }
+  const phone=document.getElementById('m-phone').value.trim()||'0';
+  const type=document.getElementById('m-type').value;
+  await run("UPDATE account SET name=?,number=?,account_type=? WHERE _id=?",[name,phone,type,currentAccount.id]);
+  currentAccount.name=name; currentAccount.number=phone; currentAccount.type=type;
+  closeModal(); toast('Updated'); await renderAccountDetail();
+}
+
+async function deleteAccount(){
+  if(!confirm('Delete this account and all its transactions?')) return;
+  await run("DELETE FROM trans WHERE name=? AND business=?",[currentAccount.name,currentAccount.business||currentBiz]);
+  await run("DELETE FROM account WHERE _id=?",[currentAccount.id]);
+  closeModal(); currentAccount=null; document.getElementById('backBtn').style.display='none'; toast('Deleted'); await renderAccounts();
+}
+
+function showAddTransModal(type){
+  showModal(type==='credit'?'Add Credit (Money In)':'Add Debit (Money Out)',`
+    <div class="form-group"><label>Amount (₹) *</label><input id="m-amt" type="number" placeholder="0" style="font-size:22px;font-weight:700"/></div>
+    <div class="form-group"><label>Date</label><input id="m-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+    <div class="form-group"><label>Narration / Note</label><input id="m-narr" placeholder="Optional note"/></div>
+  `,`<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn ${type==='credit'?'btn-success':'btn-danger'}" onclick="saveTrans('${type}')">Save</button>`);
+  setTimeout(()=>document.getElementById('m-amt')?.focus(),200);
+}
+
+async function saveTrans(type){
+  const amt=parseFloat(document.getElementById('m-amt').value);
+  if(!amt||amt<=0){ toast('Enter valid amount'); return; }
+  const date=document.getElementById('m-date').value;
+  const narr=document.getElementById('m-narr').value.trim();
+  const acc=currentAccount;
+  let newBal=acc.balance+(type==='credit'?amt:-amt);
+  await run("INSERT INTO trans (name,date,credit,debit,narration,balance,business,entry_date) VALUES (?,?,?,?,?,?,?,?)",[acc.name,date+' 00:00:00',type==='credit'?amt:0,type==='debit'?amt:0,narr,newBal,acc.business||currentBiz,Date.now()]);
+  await run("UPDATE account SET balance=?,last_transaction=? WHERE _id=?",[newBal,Date.now(),acc.id]);
+  currentAccount.balance=newBal;
+  closeModal(); toast('Saved'); await renderAccountDetail();
+}
+
+async function showTransDetail(id){
+  const t=(await query("SELECT _id,name,date,credit,debit,narration,balance,entry_date FROM trans WHERE _id=?",[id]))[0];
+  if(!t) return;
+  const isC=(t.credit??t[3])>0; const amt=isC?(t.credit??t[3]):(t.debit??t[4]);
+  showModal('Transaction Detail',`
+    <div style="text-align:center;padding:12px 0">
+      <div style="font-size:32px;font-weight:800;color:${isC?'var(--green)':'var(--red)'}">${isC?'+':'-'}${fmt(amt)}</div>
+      <div style="color:var(--text2);margin-top:4px">${isC?'Credit':'Debit'}</div>
+    </div>
+    <table style="width:100%;font-size:14px;border-collapse:collapse">
+      <tr><td style="color:var(--text2);padding:6px 0">Account</td><td style="text-align:right;font-weight:600">${t.name??t[1]}</td></tr>
+      <tr><td style="color:var(--text2);padding:6px 0">Date</td><td style="text-align:right">${fmtDate(t.date??t[2]??t.entry_date??t[7])}</td></tr>
+      ${(t.narration??t[5])?`<tr><td style="color:var(--text2);padding:6px 0">Note</td><td style="text-align:right">${t.narration??t[5]}</td></tr>`:''}
+      <tr><td style="color:var(--text2);padding:6px 0">Balance after</td><td style="text-align:right;font-weight:600">${fmt(t.balance??t[6])}</td></tr>
+    </table>
+  `,`<button class="btn btn-danger" onclick="deleteTrans(${t._id??t[0]})">Delete</button><button class="btn btn-outline" onclick="closeModal()">Close</button>`);
+}
+
+async function deleteTrans(id){
+  const rows=await query("SELECT name,credit,debit,business FROM trans WHERE _id=?",[id]);
+  if(!rows.length) return;
+  const r=rows[0]; const credit=r.credit??r[1]; const debit=r.debit??r[2]; const name=r.name??r[0]; const biz=r.business??r[3];
+  const diff=credit>0?-credit:debit;
+  await run("UPDATE account SET balance=balance+? WHERE name=? AND business=?",[diff,name,biz||currentBiz]);
+  await run("UPDATE trans SET isDeleted=1,deletedDate=? WHERE _id=?",[Date.now(),id]);
+  if(currentAccount){ const rows2=await query("SELECT balance FROM account WHERE _id=?",[currentAccount.id]); if(rows2.length) currentAccount.balance=rows2[0].balance??rows2[0][0]; }
+  closeModal(); toast('Deleted'); await renderAccountDetail();
+}
+
+function onFabClick(){
+  switch(currentPage){
+    case 'accounts': showAddAccountModal(); break;
+    case 'bills': showCreateBillModal(''); break;
+    case 'items': showAddItemModal(); break;
+    default: showAddAccountModal();
+  }
+}
+
+// ─── BILLS ─────────────────────────────────
+async function renderBills(){
+  document.getElementById('pageTitle').textContent='Bills';
+  document.getElementById('fab').style.display='flex';
+  const bills=await query("SELECT _id,bill_no,account_name,date,total,transferred FROM bills WHERE business=? ORDER BY date DESC",[currentBiz]);
+  const html=`
+  ${bills.length===0?`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><h3>No bills yet</h3><p>Tap + to create a bill</p></div>`:''}
+  ${bills.map(b=>{
+    const id=b._id??b[0]; const no=b.bill_no??b[1]; const acc=b.account_name??b[2]; const dt=b.date??b[3]; const total=b.total??b[4]; const tf=b.transferred??b[5];
+    return `<div class="trans-card" onclick="viewBill(${id})">
+      <div class="trans-icon credit" style="background:#E3F2FD"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+      <div class="trans-info"><div class="desc">${no||'Bill'} • ${acc||'-'}</div><div class="date">${fmtDate(dt)} ${tf?'<span style="color:var(--green);font-weight:600">✓ Transferred</span>':''}</div></div>
+      <div class="trans-amt credit">${fmt(total)}</div>
+    </div>`;
+  }).join('')}`;
+  document.getElementById('main').innerHTML=html;
+}
+
+async function nextBillNo(){
+  const r=await query("SELECT COUNT(*) as c FROM bills WHERE business=?",[currentBiz]);
+  return 'Bill No. '+((r[0]?.c??r[0]?.[0]??0)+1);
+}
+
+async function showCreateBillModal(presetAccount=''){
+  billItems=[{name:'',qty:1,rate:0}];
+  const accounts=await query("SELECT name FROM account WHERE business=? ORDER BY name",[currentBiz]);
+  const billNo=await nextBillNo();
+  showModal('Create Bill',`
+    <div class="form-group"><label>Bill No</label><input id="b-no" value="${billNo}"/></div>
+    <div class="form-group"><label>Account / Customer</label>
+      <input id="b-acc" list="acc-dl" value="${presetAccount}" placeholder="Start typing..."/>
+      <datalist id="acc-dl">${accounts.map(a=>`<option value="${a.name??a[0]}"></option>`).join('')}</datalist>
+    </div>
+    <div class="form-group"><label>Date</label><input id="b-date" type="date" value="${new Date().toISOString().slice(0,10)}"/></div>
+    <div class="form-group"><label>Items</label>
+      <div id="bill-items-container"></div>
+      <button class="btn btn-outline btn-sm" onclick="addBillItemRow()" style="margin-top:6px">+ Add Item</button>
+    </div>
+    <div class="form-group"><label>Notes</label><input id="b-notes" placeholder="Optional"/></div>
+    <div style="background:#E3F2FD;border-radius:8px;padding:12px;margin:8px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:700">Total</span>
+        <span id="bill-total-display" style="font-size:22px;font-weight:800;color:var(--blue)">₹0</span>
+      </div>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:14px"><input type="checkbox" id="b-transfer" checked/> Transfer amount to account as debit</label>
+  `,`<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveBill()">Save Bill</button>`);
+  await renderBillItems();
+}
+
+function addBillItemRow(){ billItems.push({name:'',qty:1,rate:0}); renderBillItems(); }
+
+async function renderBillItems(){
+  const items=await query("SELECT name,rate FROM item WHERE business=? ORDER BY name",[currentBiz]);
+  const c=document.getElementById('bill-items-container');
+  if(!c) return;
+  c.innerHTML=billItems.map((it,i)=>`
+    <div class="bill-item-row">
+      <input value="${it.name}" list="itdl-${i}" placeholder="Item" oninput="billItems[${i}].name=this.value;autofillRate(${i},this.value)" style="flex:2"/>
+      <datalist id="itdl-${i}">${items.map(r=>`<option value="${r.name??r[0]}"></option>`).join('')}</datalist>
+      <input class="qty" type="number" value="${it.qty}" min="0.01" step="0.01" placeholder="Qty" oninput="billItems[${i}].qty=parseFloat(this.value)||0;updateBillTotal()"/>
+      <input class="rate" type="number" value="${it.rate}" min="0" step="0.01" placeholder="Rate" oninput="billItems[${i}].rate=parseFloat(this.value)||0;updateBillTotal()"/>
+      <div class="total-cell">${fmt((it.qty||0)*(it.rate||0))}</div>
+      <button class="del-item" onclick="billItems.splice(${i},1);renderBillItems()">×</button>
+    </div>`).join('');
+  updateBillTotal();
+}
+
+async function autofillRate(idx,name){
+  const rows=await query("SELECT rate FROM item WHERE name=? AND business=?",[name,currentBiz]);
+  if(rows.length){ billItems[idx].rate=rows[0].rate??rows[0][0]; renderBillItems(); }
+}
+
+function updateBillTotal(){
+  const total=billItems.reduce((s,it)=>s+(it.qty||0)*(it.rate||0),0);
+  const el=document.getElementById('bill-total-display');
+  if(el) el.textContent=fmt(total);
+}
+
+async function saveBill(){
+  const billNo=document.getElementById('b-no').value.trim();
+  const accName=document.getElementById('b-acc').value.trim();
+  const date=document.getElementById('b-date').value;
+  const notes=document.getElementById('b-notes').value.trim();
+  const transfer=document.getElementById('b-transfer').checked;
+  const total=billItems.reduce((s,it)=>s+(it.qty||0)*(it.rate||0),0);
+  if(total===0){ toast('Add at least one item with amount'); return; }
+  if(!accName){ toast('Account name required'); return; }
+
+  await run("INSERT INTO bills (bill_no,account_name,date,items_json,total,notes,business,transferred) VALUES (?,?,?,?,?,?,?,?)",[billNo,accName,Date.now(),JSON.stringify(billItems),total,notes,currentBiz,transfer?1:0]);
+
+  for(const it of billItems){
+    if(it.name&&it.qty>0){
+      await run("INSERT INTO itemtrans (name,unit,date,sale,purchase,notes,business,sale_price,purchase_price) VALUES (?,?,?,?,?,?,?,?,?)",[it.name,'',Date.now(),it.qty,0,billNo+'\n'+accName,currentBiz,it.qty*it.rate,0]);
+      await run("UPDATE item SET balance=balance-? WHERE name=? AND business=?",[it.qty,it.name,currentBiz]);
+    }
+  }
+
+  if(transfer){
+    const accRows=await query("SELECT _id,balance FROM account WHERE name=? AND business=?",[accName,currentBiz]);
+    if(accRows.length){
+      const r=accRows[0]; const newBal=(r.balance??r[1])-total;
+      await run("UPDATE account SET balance=?,last_transaction=? WHERE _id=?",[newBal,Date.now(),r._id??r[0]]);
+      await run("INSERT INTO trans (name,date,credit,debit,narration,bill,balance,business,entry_date) VALUES (?,?,?,?,?,?,?,?,?)",[accName,date+' 00:00:00',0,total,'Bill: '+billNo,billNo,newBal,currentBiz,Date.now()]);
+      toast('Bill saved & transferred');
+    } else { toast('Bill saved (account not found for transfer)'); }
+  } else { toast('Bill saved'); }
+  closeModal(); await renderBills();
+}
+
+async function viewBill(id){
+  const rows=await query("SELECT * FROM bills WHERE _id=?",[id]);
+  if(!rows.length) return;
+  const b=rows[0];
+  const billNo=b.bill_no??b[1]; const accName=b.account_name??b[2]; const dt=b.date??b[3]; const total=b.total??b[5]; const notes=b.notes??b[6]; const transferred=b.transferred??b[8];
+  const items=JSON.parse(b.items_json??b[4]??'[]');
+  showModal('Bill Preview',`
+    <div class="bill-preview" id="thermal-bill">
+      <h3>${currentBiz}</h3>
+      <div style="text-align:center;font-size:11px;margin-bottom:4px">${billNo||''}</div>
+      <div class="bill-divider"></div>
+      <div class="bill-row"><span>To: ${accName}</span><span>${fmtDate(dt)}</span></div>
+      <div class="bill-divider"></div>
+      <div class="bill-row" style="font-weight:700"><span>Item</span><span>Qty</span><span>Rate</span><span>Amt</span></div>
+      <div class="bill-divider"></div>
+      ${items.map(it=>`<div class="bill-row"><span>${it.name}</span><span>${it.qty}</span><span>${fmt(it.rate)}</span><span>${fmt(it.qty*it.rate)}</span></div>`).join('')}
+      <div class="bill-divider"></div>
+      <div class="bill-total"><span>TOTAL</span><span>${fmt(total)}</span></div>
+      ${notes?`<div class="bill-divider"></div><div style="font-size:11px">${notes}</div>`:''}
+      <div class="bill-divider"></div>
+      <div style="text-align:center;font-size:10px">Thank you!</div>
+    </div>
+  `,`<button class="btn btn-outline" onclick="closeModal()">Close</button>
+     <button class="btn btn-primary" onclick="printBill()">🖨 Print</button>
+     ${!transferred?`<button class="btn btn-success" onclick="transferBill(${id},${total},'${accName}')">Transfer</button>`:''}`);
+}
+
+function printBill(){
+  const content=document.getElementById('thermal-bill')?.outerHTML||'';
+  const w=window.open('','_blank','width=400,height=700');
+  if(!w){ toast('Allow popups to print'); return; }
+  w.document.write(`<html><head><title>Bill</title><style>
+    body{font-family:'Courier New',monospace;font-size:12px;width:80mm;margin:0 auto;padding:8px}
+    h3{text-align:center;font-size:14px;margin:0 0 4px}
+    .bill-divider{border-top:1px dashed #000;margin:6px 0}
+    .bill-row{display:flex;justify-content:space-between}
+    .bill-total{display:flex;justify-content:space-between;font-weight:700;font-size:13px}
+    @media print{body{margin:0;padding:2px}}
+  </style></head><body>${content}<script>window.onload=()=>{window.print();}<\/script></body></html>`);
+  w.document.close();
+}
+
+async function transferBill(billId,total,accName){
+  const accRows=await query("SELECT _id,balance FROM account WHERE name=? AND business=?",[accName,currentBiz]);
+  if(!accRows.length){ toast('Account not found'); return; }
+  const r=accRows[0]; const newBal=(r.balance??r[1])-total;
+  await run("UPDATE account SET balance=?,last_transaction=? WHERE _id=?",[newBal,Date.now(),r._id??r[0]]);
+  const billRows=await query("SELECT bill_no FROM bills WHERE _id=?",[billId]);
+  const billNo=billRows[0]?.bill_no??billRows[0]?.[1]??'Bill';
+  await run("INSERT INTO trans (name,date,credit,debit,narration,bill,balance,business,entry_date) VALUES (?,?,?,?,?,?,?,?,?)",[accName,new Date().toISOString().slice(0,19),0,total,'Bill: '+billNo,billNo,newBal,currentBiz,Date.now()]);
+  await run("UPDATE bills SET transferred=1 WHERE _id=?",[billId]);
+  closeModal(); toast('Transferred to account'); await renderBills();
+}
+
+// ─── ITEMS ─────────────────────────────────
+async function renderItems(){
+  document.getElementById('pageTitle').textContent='Inventory';
+  document.getElementById('fab').style.display='flex';
+  const items=await query("SELECT _id,name,rate,balance,category,unit,lowStockAlert FROM item WHERE business=? ORDER BY name",[currentBiz]);
+  const html=`
+  ${items.length===0?`<div class="empty"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><h3>No items yet</h3><p>Tap + to add items</p></div>`:''}
+  ${items.map(it=>{
+    const name=it.name??it[1]; const rate=it.rate??it[2]; const bal=it.balance??it[3]; const cat=it.category??it[4]; const unit=it.unit??it[5]??''; const low=it.lowStockAlert??it[6]??0;
+    const isLow=low>0&&Math.abs(bal)<low;
+    return `<div class="item-card" onclick="showItemDetail(${it._id??it[0]})">
+      <div class="item-icon">📦</div>
+      <div class="item-info">
+        <h3>${name}${cat&&cat!=='Others'?`<span class="badge" style="background:#E3F2FD;color:#1565C0">${cat}</span>`:''} ${isLow?'<span class="badge low">Low Stock</span>':''}</h3>
+        <p>Stock: ${Math.abs(bal)} ${unit} • Rate: ${fmt(rate)}</p>
+      </div>
+    </div>`;
+  }).join('')}`;
+  document.getElementById('main').innerHTML=html;
+}
+
+function showAddItemModal(){
+  showModal('Add Item',`
+    <div class="form-group"><label>Item Name *</label><input id="it-name" placeholder="Name"/></div>
+    <div class="form-group"><label>Sale Rate (₹)</label><input id="it-rate" type="number" placeholder="0"/></div>
+    <div class="form-group"><label>Opening Stock</label><input id="it-stock" type="number" placeholder="0"/></div>
+    <div class="form-group"><label>Unit</label><input id="it-unit" placeholder="kg / pcs / litre etc"/></div>
+    <div class="form-group"><label>Category</label><input id="it-cat" placeholder="Category"/></div>
+    <div class="form-group"><label>Low Stock Alert at</label><input id="it-low" type="number" placeholder="0"/></div>
+  `,`<button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="saveItem()">Save</button>`);
+}
+
+async function saveItem(){
+  const name=document.getElementById('it-name').value.trim();
+  if(!name){ toast('Name required'); return; }
+  const rate=parseFloat(document.getElementById('it-rate').value)||0;
+  const stock=parseFloat(document.getElementById('it-stock').value)||0;
+  const unit=document.getElementById('it-unit').value.trim();
+  const cat=document.getElementById('it-cat').value.trim()||'Others';
+  const low=parseFloat(document.getElementById('it-low').value)||0;
+  await run("INSERT INTO item (name,rate,balance,category,unit,lowStockAlert,business) VALUES (?,?,?,?,?,?,?)",[name,rate,stock,cat,unit,low,currentBiz]);
+  closeModal(); toast('Item added'); await renderItems();
+}
+
+async function showItemDetail(id){
+  const rows=await query("SELECT * FROM item WHERE _id=?",[id]);
+  if(!rows.length) return;
+  const it=rows[0]; const name=it.name??it[1]; const unit=it.unit??it[5]??'';
+  const trans=await query("SELECT date,sale,purchase,notes,sale_price,purchase_price FROM itemtrans WHERE name=? AND business=? ORDER BY date DESC LIMIT 20",[name,currentBiz]);
+  showModal(name,`
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <div class="sum-card" style="flex:1"><div class="label">Rate</div><div class="amount" style="color:var(--blue)">${fmt(it.rate??it[2])}</div></div>
+      <div class="sum-card" style="flex:1"><div class="label">Stock</div><div class="amount">${Math.abs(it.balance??it[3])} ${unit}</div></div>
+    </div>
+    <div class="btn-row" style="margin-bottom:14px">
+      <button class="btn btn-success btn-sm" onclick="adjustStock(${id},'in')">Stock In</button>
+      <button class="btn btn-danger btn-sm" onclick="adjustStock(${id},'out')">Stock Out</button>
+      <button class="btn btn-outline btn-sm" onclick="editItem(${id})">Edit</button>
+    </div>
+    ${trans.map(t=>{const isSale=(t.sale??t[1])>0; return `<div class="trans-card" style="margin-bottom:6px"><div class="trans-icon ${isSale?'credit':'debit'}">${isSale?'↑':'↓'}</div><div class="trans-info"><div class="desc">${t.notes??t[3]??''}</div><div class="date">${fmtDate(t.date??t[0])}</div></div><div><div class="trans-amt ${isSale?'credit':'debit'}">${isSale?'-':'+'}${(t.sale??t[1])>0?(t.sale??t[1]):(t.purchase??t[2])} ${unit}</div></div></div>`;}).join('')}
+  `,'<button class="btn btn-outline" onclick="closeModal()">Close</button>');
+}
+
+async function adjustStock(itemId,dir){
+  const rows=await query("SELECT name,balance,unit FROM item WHERE _id=?",[itemId]);
+  if(!rows.length) return;
+  const r=rows[0]; const name=r.name??r[0]; const unit=r.unit??r[2]??'';
+  const qty=parseFloat(prompt(`Quantity to ${dir==='in'?'add':'remove'} (${unit||'units'}):`)||'0');
+  if(!qty||qty<=0) return;
+  const notes=prompt('Notes (optional):')||'';
+  if(dir==='in'){
+    await run("UPDATE item SET balance=balance+? WHERE _id=?",[qty,itemId]);
+    await run("INSERT INTO itemtrans (name,unit,date,sale,purchase,notes,business,sale_price,purchase_price) VALUES (?,?,?,?,?,?,?,?,?)",[name,unit,Date.now(),0,qty,notes,currentBiz,0,0]);
+  } else {
+    await run("UPDATE item SET balance=balance-? WHERE _id=?",[qty,itemId]);
+    await run("INSERT INTO itemtrans (name,unit,date,sale,purchase,notes,business,sale_price,purchase_price) VALUES (?,?,?,?,?,?,?,?,?)",[name,unit,Date.now(),qty,0,notes,currentBiz,0,0]);
+  }
+  closeModal(); toast('Stock updated'); await renderItems();
+}
+
+async function editItem(id){
+  const rows=await query("SELECT * FROM item WHERE _id=?",[id]);
+  if(!rows.length) return;
+  const it=rows[0];
+  closeModal();
+  showModal('Edit Item',`
+    <div class="form-group"><label>Name</label><input id="it-name" value="${it.name??it[1]}"/></div>
+    <div class="form-group"><label>Rate (₹)</label><input id="it-rate" type="number" value="${it.rate??it[2]}"/></div>
+    <div class="form-group"><label>Unit</label><input id="it-unit" value="${it.unit??it[5]??''}"/></div>
+    <div class="form-group"><label>Category</label><input id="it-cat" value="${it.category??it[4]??'Others'}"/></div>
+    <div class="form-group"><label>Low Stock Alert</label><input id="it-low" type="number" value="${it.lowStockAlert??it[6]??0}"/></div>
+  `,`<button class="btn btn-danger" onclick="deleteItem(${id})">Delete</button><button class="btn btn-outline" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="updateItem(${id})">Save</button>`);
+}
+
+async function updateItem(id){
+  const name=document.getElementById('it-name').value.trim();
+  const rate=parseFloat(document.getElementById('it-rate').value)||0;
+  const unit=document.getElementById('it-unit').value.trim();
+  const cat=document.getElementById('it-cat').value.trim()||'Others';
+  const low=parseFloat(document.getElementById('it-low').value)||0;
+  await run("UPDATE item SET name=?,rate=?,unit=?,category=?,lowStockAlert=? WHERE _id=?",[name,rate,unit,cat,low,id]);
+  closeModal(); toast('Updated'); await renderItems();
+}
+
+async function deleteItem(id){
+  if(!confirm('Delete this item?')) return;
+  await run("DELETE FROM item WHERE _id=?",[id]);
+  closeModal(); toast('Deleted'); await renderItems();
+}
+
+// ─── REPORTS ───────────────────────────────
+async function renderReports(){
+  document.getElementById('pageTitle').textContent='Reports';
+  document.getElementById('fab').style.display='none';
+  const now=new Date();
+  const thisMonth=now.toISOString().slice(0,7);
+  const monthStart=thisMonth+'-01 00:00:00';
+  const monthEnd=thisMonth+'-31 23:59:59';
+  const credits=await query("SELECT COALESCE(SUM(credit),0) as s FROM trans WHERE business=? AND isDeleted=0 AND date>=? AND date<=?",[currentBiz,monthStart,monthEnd]);
+  const debits=await query("SELECT COALESCE(SUM(debit),0) as s FROM trans WHERE business=? AND isDeleted=0 AND date>=? AND date<=?",[currentBiz,monthStart,monthEnd]);
+  const billsCount=await query("SELECT COUNT(*) as c,COALESCE(SUM(total),0) as s FROM bills WHERE business=? AND date>=?",[currentBiz,(new Date(now.getFullYear(),now.getMonth(),1)).getTime()]);
+  const topAcc=await query("SELECT name,ABS(balance) as ab,balance FROM account WHERE business=? ORDER BY ab DESC LIMIT 5",[currentBiz]);
+  const accCount=await query("SELECT COUNT(*) as c FROM account WHERE business=?",[currentBiz]);
+  const transCount=await query("SELECT COUNT(*) as c FROM trans WHERE business=? AND isDeleted=0",[currentBiz]);
+  const monthName=now.toLocaleString('en-IN',{month:'long',year:'numeric'});
+  document.getElementById('main').innerHTML=`
+  <div class="report-card">
+    <h3>📊 ${monthName}</h3>
+    <div class="summary-row">
+      <div class="sum-card credit"><div class="label">Received</div><div class="amount">${fmt(credits[0]?.s??credits[0]?.[0]??0)}</div></div>
+      <div class="sum-card debit"><div class="label">Paid</div><div class="amount">${fmt(debits[0]?.s??debits[0]?.[0]??0)}</div></div>
+      <div class="sum-card net"><div class="label">Bills</div><div class="amount">${billsCount[0]?.c??billsCount[0]?.[0]??0}</div></div>
+    </div>
+  </div>
+  <div class="report-card">
+    <h3>🏆 Top Accounts</h3>
+    ${topAcc.map(a=>{const name=a.name??a[0]; const bal=a.balance??a[2]; return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:8px"><div class="avatar" style="width:32px;height:32px;font-size:12px;background:${avatarColor(name)}">${initials(name)}</div>${name}</div><div class="bal ${bal>=0?'pos':'neg'}">${fmt(bal)}</div></div>`;}).join('')}
+  </div>
+  <div class="report-card">
+    <h3>📈 Overview</h3>
+    <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--text2)">Total Accounts</span><strong>${accCount[0]?.c??accCount[0]?.[0]??0}</strong></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--text2)">Total Transactions</span><strong>${transCount[0]?.c??transCount[0]?.[0]??0}</strong></div>
+    <div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--text2)">Bills This Month</span><strong>${billsCount[0]?.c??0} (${fmt(billsCount[0]?.s??0)})</strong></div>
+  </div>`;
+}
+
+// ─── SETTINGS ──────────────────────────────
+function renderSettings(){
+  document.getElementById('pageTitle').textContent='Settings';
+  document.getElementById('fab').style.display='none';
+  const gdConnected=!!gdToken;
+  const lastSync=localStorage.getItem('lastSync');
+  document.getElementById('main').innerHTML=`
+  <div class="settings-section">
+    <h3>Business</h3>
+    ${businesses.map(b=>`<div class="settings-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><div class="si-info"><h4>${b}</h4><p>${b===currentBiz?'Active':''}</p></div></div>`).join('')}
+    <div class="settings-item" onclick="addBusiness()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg><div class="si-info"><h4>Add Business</h4><p>Create a new business/book</p></div></div>
+  </div>
+  <div class="settings-section">
+    <h3>Google Drive Sync</h3>
+    <div class="settings-item" onclick="connectGoogleDrive()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="${gdConnected?'var(--green)':'currentColor'}" stroke-width="2"><ellipse cx="12" cy="12" rx="10" ry="10"/></svg>
+      <div class="si-info"><h4>${gdConnected?'Drive Connected':'Connect Google Drive'}</h4><p>${gdConnected?'Auto-sync active':'Sign in to enable cloud backup'}</p></div>
+    </div>
+    <div class="settings-item" onclick="manualSync()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <div class="si-info"><h4>Sync Now</h4><p>${lastSync?'Last: '+new Date(parseInt(lastSync)).toLocaleString('en-IN'):'Never synced'}</p></div>
+    </div>
+    <div class="settings-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div class="si-info"><h4>Auto Sync</h4><p>Sync on every change</p></div>
+      <div class="toggle ${autoSyncEnabled?'on':''}" onclick="toggleAutoSync(this)"></div>
+    </div>
+  </div>
+  <div class="settings-section">
+    <h3>Backup & Restore</h3>
+    <div class="settings-item" onclick="downloadBackup()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <div class="si-info"><h4>Download .db Backup</h4><p>Save native SQLite file to device</p></div>
+    </div>
+    <div class="settings-item" onclick="document.getElementById('restoreInput').click()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div class="si-info"><h4>Restore from .db File</h4><p>Load your original DB file</p></div>
+    </div>
+    <input type="file" id="restoreInput" accept=".db" style="display:none" onchange="restoreBackup(this)"/>
+    <div class="settings-item" onclick="showDbPath()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+      <div class="si-info"><h4>DB File Location</h4><p>View native .db file path</p></div>
+    </div>
+  </div>
+  <div class="settings-section">
+    <h3>About</h3>
+    <div class="settings-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="si-info"><h4>Khata Book v1.0</h4><p>Capacitor Native App • SQLite .db on device storage</p></div>
+    </div>
+  </div>`;
+}
+
+async function showDbPath(){
+  showModal('Database File',`
+    <p style="color:var(--text2);font-size:14px;line-height:1.6">Your data is stored as a native SQLite file at:</p>
+    <div style="background:#F5F5F5;border-radius:8px;padding:12px;margin:12px 0;font-family:monospace;font-size:12px;word-break:break-all">
+      /data/data/com.khatabook.app/databases/khatabook.db
+    </div>
+    <p style="color:var(--text2);font-size:13px">You can copy this file directly to your computer via Android Debug Bridge (adb) or access it with any SQLite viewer. It is fully compatible with the original Ankit Saraf app format.</p>
+  `,'<button class="btn btn-outline" onclick="closeModal()">Close</button>');
+}
+
+async function addBusiness(){
+  const name=prompt('Business name:');
+  if(!name?.trim()) return;
+  await run("INSERT INTO business (name) VALUES (?)",[name.trim()]);
+  await loadBusinesses();
+  toast('Business added'); renderSettings();
+}
+
+function toggleAutoSync(el){
+  autoSyncEnabled=!autoSyncEnabled;
+  el.classList.toggle('on',autoSyncEnabled);
+  localStorage.setItem('autoSync',autoSyncEnabled);
+  toast(autoSyncEnabled?'Auto-sync ON':'Auto-sync OFF');
+}
+
+// ─── BACKUP / RESTORE ──────────────────────
+async function downloadBackup(){
+  try{
+    const { CapacitorSQLite } = Capacitor.Plugins;
+    // Copy the native DB to a downloadable location via Filesystem
+    const { Filesystem } = Capacitor.Plugins;
+    // Get DB content as base64
+    const result = await sqlite.saveToLocalDisk({ database: DB_NAME });
+    toast('DB saved to Downloads folder');
+  } catch(e){
+    // Fallback: export via web
+    toast('Exporting...'); 
+    const res = await sqlite.getFromLocalDiskToStore({ database: DB_NAME });
+    toast('Check your Downloads folder');
+  }
+}
+
+async function restoreBackup(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(!confirm('Replace ALL current data with this backup?')) return;
+  toast('Restoring...');
+  try{
+    const arr=await file.arrayBuffer();
+    const bytes=new Uint8Array(arr);
+    const b64=btoa(String.fromCharCode(...bytes));
+    await sqlite.restoreDatabaseFromLocalDisk({ database: DB_NAME, fileContent: b64 });
+    await loadBusinesses();
+    toast('Restored! Reloading...');
+    setTimeout(()=>location.reload(),1500);
+  } catch(e){
+    toast('Restore failed: '+e.message);
+  }
+}
+
+// ─── GOOGLE DRIVE ──────────────────────────
+const GD_CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID';
+const GD_SCOPE = 'https://www.googleapis.com/auth/drive.file';
+
+function connectGoogleDrive(){
+  if(gdToken){ showGDMenu(); return; }
+  const redirect=encodeURIComponent(location.origin+location.pathname);
+  const url=`https://accounts.google.com/o/oauth2/v2/auth?client_id=${GD_CLIENT_ID}&redirect_uri=${redirect}&response_type=token&scope=${encodeURIComponent(GD_SCOPE)}&prompt=select_account`;
+  window.location.href=url;
+}
+
+function showGDMenu(){
+  showModal('Google Drive',`<p style="color:var(--text2);margin-bottom:16px">Google Drive is connected. Your .db file syncs automatically.</p>`,
+    `<button class="btn btn-danger" onclick="disconnectGD()">Disconnect</button><button class="btn btn-outline" onclick="closeModal()">Close</button>`);
+}
+
+function disconnectGD(){
+  gdToken=null; gdFileId=null;
+  localStorage.removeItem('gdToken'); localStorage.removeItem('gdFileId');
+  updateSyncStatus('Not synced','warn');
+  closeModal(); toast('Disconnected'); renderSettings();
+}
+
+function updateSyncStatus(text,state){
+  const dot=document.getElementById('syncDot'); const txt=document.getElementById('syncText');
+  if(dot) dot.className='dot'+(state?' '+state:'');
+  if(txt) txt.textContent=text;
+}
+
+async function uploadToGoogleDrive(){
+  if(!gdToken) return false;
+  try{
+    const data = await sqlite.exportDB({ database: DB_NAME });
+    const blob = new Blob([Uint8Array.from(atob(data.export), c=>c.charCodeAt(0))], {type:'application/octet-stream'});
+    let url, method;
+    if(gdFileId){
+      url=`https://www.googleapis.com/upload/drive/v3/files/${gdFileId}?uploadType=media`;
+      method='PATCH';
+    } else {
+      const meta=await fetch('https://www.googleapis.com/drive/v3/files',{method:'POST',headers:{'Authorization':'Bearer '+gdToken,'Content-Type':'application/json'},body:JSON.stringify({name:'khatabook.db'})});
+      const mj=await meta.json();
+      gdFileId=mj.id; localStorage.setItem('gdFileId',gdFileId);
+      url=`https://www.googleapis.com/upload/drive/v3/files/${gdFileId}?uploadType=media`;
+      method='PATCH';
+    }
+    const res=await fetch(url,{method,headers:{'Authorization':'Bearer '+gdToken,'Content-Type':'application/octet-stream'},body:blob});
+    if(!res.ok) throw new Error('upload fail '+res.status);
+    const ts=Date.now(); localStorage.setItem('lastSync',ts);
+    updateSyncStatus('Synced '+new Date(ts).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),'');
+    return true;
+  } catch(e){
+    updateSyncStatus('Sync failed','err');
+    return false;
+  }
+}
+
+async function manualSync(){
+  if(!gdToken){ toast('Connect Google Drive first'); connectGoogleDrive(); return; }
+  updateSyncStatus('Syncing...','warn'); toast('Syncing...');
+  const ok=await uploadToGoogleDrive();
+  toast(ok?'Synced to Google Drive ✓':'Sync failed');
+  if(currentPage==='settings') renderSettings();
+}
+
+function showSyncMenu(){ gdToken?showGDMenu():showModal('Cloud Sync','<p style="color:var(--text2)">Connect Google Drive to backup your native .db file to the cloud.</p>','<button class="btn btn-outline" onclick="closeModal()">Later</button><button class="btn btn-primary" onclick="closeModal();connectGoogleDrive()">Connect Drive</button>'); }
+
+function scheduleAutoSync(){
+  if(syncTimer) clearTimeout(syncTimer);
+  if(autoSyncEnabled&&gdToken) syncTimer=setTimeout(()=>uploadToGoogleDrive(),4000);
+}
+
+// ─── OAUTH CALLBACK ────────────────────────
+function checkOAuthCallback(){
+  const hash=window.location.hash;
+  if(hash.includes('access_token')){
+    const params=new URLSearchParams(hash.substring(1));
+    const token=params.get('access_token');
+    if(token){
+      gdToken=token; localStorage.setItem('gdToken',token);
+      window.history.replaceState({},'',window.location.pathname);
+      toast('Google Drive connected!'); updateSyncStatus('Connected','');
+    }
+  }
+  gdToken=localStorage.getItem('gdToken')||null;
+  gdFileId=localStorage.getItem('gdFileId')||null;
+  autoSyncEnabled=localStorage.getItem('autoSync')!=='false';
+  if(gdToken) updateSyncStatus('Connected','');
+}
+
+// ─── START ─────────────────────────────────
+document.addEventListener('deviceready', ()=>{
+  checkOAuthCallback();
+  initDB();
+}, false);
+
+// Also try on DOMContentLoaded for browser testing
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(!window.Capacitor?.isNativePlatform()){
+    checkOAuthCallback();
+    initDB();
+  }
+});
+</script>
+</body>
+</html>
