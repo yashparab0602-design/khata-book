@@ -962,22 +962,57 @@ async function restoreBackup(input){
   const file=input.files[0];
   if(!file) return;
   if(!confirm('Replace ALL current data with this backup?')) return;
-  toast('Restoring...');
+  toast('Reading file...');
   try{
+    // Read .db file as ArrayBuffer
     const arr=await file.arrayBuffer();
     const bytes=new Uint8Array(arr);
-    let b64='';
-    const chunk=8192;
-    for(let i=0;i<bytes.length;i+=chunk){
-      b64+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+
+    // Load sql.js to parse the .db file in browser
+    const script=document.createElement('script');
+    script.src='https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js';
+    document.head.appendChild(script);
+    await new Promise(r=>script.onload=r);
+
+    const SQL=await initSqlJs({locateFile:f=>`https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/${f}`});
+    const srcDb=new SQL.Database(bytes);
+
+    toast('Importing data...');
+
+    // Drop and recreate all tables
+    const tables=['bills','itemtrans','item','trans','account','business'];
+    for(const t of tables){
+      await sqlite.run({database:DB_NAME,statement:`DELETE FROM ${t}`,values:[]});
     }
-    b64=btoa(b64);
-    await sqlite.restoreDatabaseFromLocalDisk({ database: DB_NAME, fileContent: b64 });
+
+    // Copy each table row by row
+    const copyTable=async(tbl)=>{
+      const res=srcDb.exec(`SELECT * FROM ${tbl}`);
+      if(!res.length) return;
+      const cols=res[0].columns;
+      const rows=res[0].values;
+      for(const row of rows){
+        const placeholders=cols.map(()=>'?').join(',');
+        const stmt=`INSERT OR IGNORE INTO ${tbl} (${cols.join(',')}) VALUES (${placeholders})`;
+        await sqlite.run({database:DB_NAME,statement:stmt,values:row});
+      }
+    };
+
+    // Restore bills table if exists
+    try{ await copyTable('business'); }catch(e){}
+    try{ await copyTable('account'); }catch(e){}
+    try{ await copyTable('trans'); }catch(e){}
+    try{ await copyTable('item'); }catch(e){}
+    try{ await copyTable('itemtrans'); }catch(e){}
+    try{ await copyTable('bills'); }catch(e){}
+
+    srcDb.close();
     await loadBusinesses();
-    toast('Restored! Reloading...');
+    toast('Restored successfully! Reloading...');
     setTimeout(()=>location.reload(),1500);
   } catch(e){
     toast('Restore failed: '+e.message);
+    console.error(e);
   }
 }
 
