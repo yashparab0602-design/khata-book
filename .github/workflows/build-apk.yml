@@ -35,7 +35,7 @@ jobs:
         run: sdkmanager "build-tools;34.0.0" "platforms;android-34"
 
       - name: Install npm dependencies
-        run: npm ci
+        run: npm install
 
       - name: Initialize Capacitor
         run: npx cap init "Khata Book" "com.khatabook.app" --web-dir www 2>/dev/null || true
